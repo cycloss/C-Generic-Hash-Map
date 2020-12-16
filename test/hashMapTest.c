@@ -19,6 +19,12 @@ int main() {
         addToMap(hm, &nums[i], msg, false);
     }
 
+    for (int i = 0; i < len(nums); i++) {
+        //TODO for some reason allowing duplicate values
+        //TODO change to remove free on overwrite and just return a kvp
+        addToMap(hm, &nums[i], msg, false);
+    }
+
     int key = 80;
     if (mapContainsKey(hm, &key)) {
         puts("Has key");

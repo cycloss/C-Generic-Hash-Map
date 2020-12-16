@@ -183,7 +183,7 @@ void addToMap(hashMap* hm, void* key, void* value, bool freeOnOverwrite) {
     if (!l) {
         l = hm->table[index] = createList();
     } else {
-        keyValPair* removedkvpp = removeForKey(l, kvpp, hm->_keyComparator);
+        keyValPair* removedkvpp = removeForKey(l, kvpp->key, hm->_keyComparator);
         if (removedkvpp && freeOnOverwrite) {
             free(removedkvpp->key);
             free(removedkvpp->val);
