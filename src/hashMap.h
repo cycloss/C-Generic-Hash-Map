@@ -16,11 +16,11 @@ hashMap* createHashMap(unsigned int (*keyHashFunction)(void*), bool (*comparator
 void addToMap(hashMap* hm, void* key, void* value, bool freeOnOverwrite);
 keyValPair* removeKeyValPair(hashMap* hm, void* item);
 bool mapContainsKey(hashMap* hm, void* key);
-void iterateMapPairs(hashMap* hm, void (*iterator)(void*));
 void* getValueForKey(hashMap* hm, void* key);
-bool isEmptyMap(hashMap* hm);
 void clearMap(hashMap* hm, bool freeValues);
 void freeMap(hashMap* hm, bool freeValues);
+bool isEmptyMap(hashMap* hm);
+void printMapPairs(hashMap* hm, void (*keyValPrinter)(keyValPair*));
 
 #endif
 

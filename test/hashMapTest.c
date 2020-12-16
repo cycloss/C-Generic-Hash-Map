@@ -1,7 +1,12 @@
 #include "../src/hashMap.h"
-#include "hashMapTest.h"
 #include <stdio.h>
 #include <stdlib.h>
+
+#define len(x) sizeof(x) / sizeof(x[0])
+
+void keyValPrinter(keyValPair* kvpp) {
+    printf("[%i : %s]\n", *(int*)kvpp->key, (char*)kvpp->val);
+}
 
 int main() {
 
@@ -22,6 +27,12 @@ int main() {
     } else {
         puts("Doesn't have key");
     }
+
+    keyValPair* kvp = removeKeyValPair(hm, &key);
+    if (kvp) {
+    }
+
+    printMapPairs(hm, keyValPrinter);
 
     // int rejectCount = 0;
     // for (int i = 0; i < len(nums); i++) {

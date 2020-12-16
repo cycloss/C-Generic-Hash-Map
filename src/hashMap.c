@@ -6,6 +6,49 @@
 //TODO write readme
 //TODO reorder functions
 
+/**
+ * A copy of handleRemoval in linkedList. Required to keep it static.
+ */
+static void handleRemoval(linkedList* l, node* previous, node* current) {
+    if (current == l->head) {
+        l->head = current->next;
+    }
+    if (current == l->tail) {
+        l->tail = previous;
+    }
+    if (previous) {
+        previous->next = current->next;
+    }
+    l->_size--;
+}
+
+static keyValPair* removeForKey(linkedList* l, void* keyp, bool (*keyComparator)(void*, void*)) {
+    node* current = l->head;
+    node* previous = NULL;
+    while (current) {
+        keyValPair* kvpp = current->value;
+        if (keyComparator(keyp, kvpp->key)) {
+            handleRemoval(l, previous, current);
+            free(current);
+            return kvpp;
+        }
+        previous = current;
+        current = current->next;
+    }
+    return NULL;
+}
+
+static int findIndexForKey(linkedList* l, void* keyp, bool (*keyComparator)(void*, void*)) {
+    node* current = l->head;
+    for (int i = 0; current; current = current->next, i++) {
+        keyValPair* kvpp = current->value;
+        if (keyComparator(keyp, kvpp->key)) {
+            return i;
+        }
+    }
+    return -1;
+}
+
 // Factor representing the number of items currently held in the table as a proportion of total table size, past which the table will expand by GROWTH_FACTOR
 #define LOAD_FACTOR 0.75
 // Factor which table size will be multiplied by when it passes LOAD_FACTOR
@@ -112,12 +155,6 @@ static keyValPair* createKeyValuePair(void* key, void* value) {
     return kvpp;
 }
 
-bool kvpIntKeyComp(void* kvp1, void* kvp2) {
-    keyValPair* kvppCasted1 = (keyValPair*)kvp1;
-    keyValPair* kvppCasted2 = (keyValPair*)kvp2;
-    return *(int*)(kvppCasted1->key) == *(int*)(kvppCasted2->key);
-}
-
 //TODO change to return pointer to kvp instead of free on overwrite
 void addToMap(hashMap* hm, void* key, void* value, bool freeOnOverwrite) {
     int index = generateTableHash(hm->_keyHashFunction(key), hm->_bucketCount);
@@ -141,34 +178,6 @@ void addToMap(hashMap* hm, void* key, void* value, bool freeOnOverwrite) {
     if ((newItemCount / hm->_bucketCount) > LOAD_FACTOR) {
         expandHashMap(hm);
     }
-}
-
-// void iterateMapPairs(hashMap* hm, void (*iterator)(void*)) {
-//     for (int i = 0; i < hm->_bucketCount; i++) {
-//         linkedList* bucket = hm->table[i];
-//         if (bucket) {
-//             //TODO create this function in linkedList
-//             iterateMapListValues(bucket, iterator);
-//         }
-//     }
-// }
-
-void clearMap(hashMap* hm, bool freeKeysAndVals) {
-    for (int i = 0; i < hm->_bucketCount; i++) {
-        linkedList* bucket = hm->table[i];
-        if (bucket) {
-            //TODO make freeMapList in linkedList
-            freeList(bucket, freeKeysAndVals);
-            hm->table[i] = NULL;
-        }
-    }
-    hm->_itemCount = 0;
-}
-
-void freeMap(hashMap* hm, bool freeKeysAndVals) {
-    clearMap(hm, freeKeysAndVals);
-    free(hm->table);
-    free(hm);
 }
 
 /**
@@ -218,6 +227,39 @@ void* getValueForKey(hashMap* hm, void* key) {
     }
 }
 
+void clearMap(hashMap* hm, bool freeKeysAndVals) {
+    for (int i = 0; i < hm->_bucketCount; i++) {
+        linkedList* bucket = hm->table[i];
+        if (bucket) {
+            //TODO make freeMapList in linkedList
+            freeList(bucket, freeKeysAndVals);
+            hm->table[i] = NULL;
+        }
+    }
+    hm->_itemCount = 0;
+}
+
+void freeMap(hashMap* hm, bool freeKeysAndVals) {
+    clearMap(hm, freeKeysAndVals);
+    free(hm->table);
+    free(hm);
+}
+
 bool isEmptyMap(hashMap* hm) {
     return hm->_itemCount == 0;
+}
+
+static void iterateMapListValues(linkedList* mapList, void (*keyValPrinter)(keyValPair*)) {
+    for (node* current = mapList->head; current; current = current->next) {
+        keyValPrinter(current->value);
+    }
+}
+
+void printMapPairs(hashMap* hm, void (*keyValPrinter)(keyValPair*)) {
+    for (int i = 0; i < hm->_bucketCount; i++) {
+        linkedList* bucket = hm->table[i];
+        if (bucket) {
+            iterateMapListValues(bucket, keyValPrinter);
+        }
+    }
 }
