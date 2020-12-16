@@ -49,6 +49,25 @@ static int findIndexForKey(linkedList* l, void* keyp, bool (*keyComparator)(void
     return -1;
 }
 
+static void iterateMapListValues(linkedList* mapList, void (*iterator)(keyValPair*)) {
+    for (node* current = mapList->head; current; current = current->next) {
+        iterator(current->value);
+    }
+}
+
+static void freeMapList(linkedList* l, bool freeKeysAndVals) {
+    for (node* current = l->head; current; current = current->next) {
+        keyValPair* kvpp = current->value;
+        if (freeKeysAndVals) {
+            free(kvpp->key);
+            free(kvpp->val);
+        }
+        free(kvpp);
+        free(current);
+    }
+    free(l);
+}
+
 // Factor representing the number of items currently held in the table as a proportion of total table size, past which the table will expand by GROWTH_FACTOR
 #define LOAD_FACTOR 0.75
 // Factor which table size will be multiplied by when it passes LOAD_FACTOR
@@ -155,7 +174,6 @@ static keyValPair* createKeyValuePair(void* key, void* value) {
     return kvpp;
 }
 
-//TODO change to return pointer to kvp instead of free on overwrite
 void addToMap(hashMap* hm, void* key, void* value, bool freeOnOverwrite) {
     int index = generateTableHash(hm->_keyHashFunction(key), hm->_bucketCount);
 
@@ -231,8 +249,7 @@ void clearMap(hashMap* hm, bool freeKeysAndVals) {
     for (int i = 0; i < hm->_bucketCount; i++) {
         linkedList* bucket = hm->table[i];
         if (bucket) {
-            //TODO make freeMapList in linkedList
-            freeList(bucket, freeKeysAndVals);
+            freeMapList(bucket, freeKeysAndVals);
             hm->table[i] = NULL;
         }
     }
@@ -247,12 +264,6 @@ void freeMap(hashMap* hm, bool freeKeysAndVals) {
 
 bool isEmptyMap(hashMap* hm) {
     return hm->_itemCount == 0;
-}
-
-static void iterateMapListValues(linkedList* mapList, void (*keyValPrinter)(keyValPair*)) {
-    for (node* current = mapList->head; current; current = current->next) {
-        keyValPrinter(current->value);
-    }
 }
 
 void printMapPairs(hashMap* hm, void (*keyValPrinter)(keyValPair*)) {
