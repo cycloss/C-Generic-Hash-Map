@@ -183,7 +183,7 @@ void addToMap(hashMap* hm, void* key, void* value, bool freeOnOverwrite) {
     if (!l) {
         l = hm->table[index] = createList();
     } else {
-        keyValPair* removedkvpp = removeForKey(l, kvpp->key, hm->_keyComparator);
+        keyValPair* removedkvpp = removeForKey(l, key, hm->_keyComparator);
         if (removedkvpp && freeOnOverwrite) {
             free(removedkvpp->key);
             free(removedkvpp->val);
@@ -266,11 +266,11 @@ bool isEmptyMap(hashMap* hm) {
     return hm->_itemCount == 0;
 }
 
-void printMapPairs(hashMap* hm, void (*keyValPrinter)(keyValPair*)) {
+void iterateMapPairs(hashMap* hm, void (*iterator)(keyValPair*)) {
     for (int i = 0; i < hm->_bucketCount; i++) {
         linkedList* bucket = hm->table[i];
         if (bucket) {
-            iterateMapListValues(bucket, keyValPrinter);
+            iterateMapListValues(bucket, iterator);
         }
     }
 }

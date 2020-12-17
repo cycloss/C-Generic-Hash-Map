@@ -20,7 +20,7 @@ void* getValueForKey(hashMap* hm, void* key);
 void clearMap(hashMap* hm, bool freeValues);
 void freeMap(hashMap* hm, bool freeValues);
 bool isEmptyMap(hashMap* hm);
-void printMapPairs(hashMap* hm, void (*keyValPrinter)(keyValPair*));
+void iterateMapPairs(hashMap* hm, void (*iterator)(keyValPair*));
 
 #endif
 

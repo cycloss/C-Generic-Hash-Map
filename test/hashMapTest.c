@@ -34,6 +34,6 @@ int main() {
         puts("Doesn't have key");
     }
 
-    printMapPairs(hm, keyValPrinter);
+    iterateMapPairs(hm, keyValPrinter);
     freeMap(hm, false);
 }
