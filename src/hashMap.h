@@ -17,8 +17,8 @@ void addToMap(hashMap* hm, void* key, void* value, bool freeOnOverwrite);
 keyValPair* removeKeyValPair(hashMap* hm, void* item);
 bool mapContainsKey(hashMap* hm, void* key);
 void* getValueForKey(hashMap* hm, void* key);
-void clearMap(hashMap* hm, bool freeValues);
-void freeMap(hashMap* hm, bool freeValues);
+void clearMap(hashMap* hm, bool freeKeysAndVals);
+void freeMap(hashMap* hm, bool freeKeysAndVals);
 bool isEmptyMap(hashMap* hm);
 void iterateMapPairs(hashMap* hm, void (*iterator)(keyValPair*));
 

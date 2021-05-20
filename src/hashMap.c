@@ -56,7 +56,8 @@ static void iterateMapListValues(linkedList* mapList, void (*iterator)(keyValPai
 }
 
 static void freeMapList(linkedList* l, bool freeKeysAndVals) {
-    for (node* current = l->head; current; current = current->next) {
+    for (node* current = l->head; current;) {
+        node* next = current->next;
         keyValPair* kvpp = current->value;
         if (freeKeysAndVals) {
             free(kvpp->key);
@@ -64,6 +65,7 @@ static void freeMapList(linkedList* l, bool freeKeysAndVals) {
         }
         free(kvpp);
         free(current);
+        current = next;
     }
     free(l);
 }
